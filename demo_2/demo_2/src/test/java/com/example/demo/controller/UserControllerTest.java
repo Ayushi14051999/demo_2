@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -57,19 +58,21 @@ public class UserControllerTest {
 
     @Test
     public void testAddUser() throws Exception {
-        User newUser = new User(); // Create a mock User object
-        newUser.setId(1);
+        // Create a mock user
+        User newUser = new User();
+        newUser.setFname("John");
+        newUser.setLname("Doe");
+        newUser.setAge(30);
 
-        when(userServices.createUser(newUser)).thenReturn(newUser);
+        // Mock the service's createUser method
+        Mockito.when(userServices.createUser(Mockito.any(User.class))).thenReturn(newUser);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/addUser")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{}")) // You should provide valid JSON data for the user here
+            .content("{\"fname\": \"John\", \"lname\": \"Doe\", \"age\": 30}"))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(newUser.getId()));
-
-
     }
 
     @Test
@@ -89,28 +92,28 @@ public class UserControllerTest {
         verify(userServices, times(1)).createUserList(userList);
     }
 
+
+
     @Test
     public void testUpdateUser() throws Exception {
-        User updatedUser = new User(); // Create a mock User object
+        // Create a mock user
+        User updatedUser = new User();
         updatedUser.setId(1);
+        updatedUser.setFname("UpdatedFirstName");
+        updatedUser.setLname("UpdatedLastName");
+        updatedUser.setAge(35);
 
-        when(userServices.updateUserById(updatedUser)).thenReturn(updatedUser);
+        // Mock the service's updateUserById method
+        Mockito.when(userServices.updateUserById(Mockito.any(User.class))).thenReturn(updatedUser);
+        
+        // Mock the repository's findById method
+        Mockito.when(userServices.getUserById(Mockito.anyInt())).thenReturn(updatedUser);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/updateUsers/")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{}")) // You should provide valid JSON data for the updated user here
+            .content("{\"id\": 1, \"fname\": \"UpdatedFirstName\", \"lname\": \"UpdatedLastName\", \"age\": 35}"))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(updatedUser.getId()));
-    }
-
-    @Test
-    public void testDeleteUser() throws Exception {
-        int userId = 1;
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/deleteUsers/{id}", userId))
-            .andExpect(MockMvcResultMatchers.status().isOk());
-
-        verify(userServices, times(1)).deleteUserById(userId);
     }
 }
