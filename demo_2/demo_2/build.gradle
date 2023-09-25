@@ -65,9 +65,6 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 gitVersioning.apply {
     refs {
-        branch('.+') {
-            version = '${ref}-SNAPSHOT'
-        }
         tag('v(?<version>.*)') {
             version = 'v${ref.version}'
         }
@@ -77,9 +74,21 @@ gitVersioning.apply {
     rev {
         version = '${commit}'
     }
+// Access the version value from the git-versioning plugin
+	def gitVersion = project.extensions.findByType(me.qoomon.gradle.gitversioning.GitVersioningPluginExtension)
+
+	// Check if the git-versioning plugin is applied
+	if (gitVersion != null) {
+	    // Access the version value from the plugin
+	    def version = gitVersion
+
+	    // Now, 'version' contains the extracted version value
+	    println "The extracted version is: $version"
+	} else {
+	    // Handle the case when the git-versioning plugin is not applied
+	    println "The git-versioning plugin is not applied."
+	}
 }
-
-
 
 
 description = 'demo_2'
