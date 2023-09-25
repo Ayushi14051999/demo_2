@@ -9,6 +9,7 @@ plugins {
     id 'maven-publish'
     id "org.springdoc.openapi-gradle-plugin" version "1.7.0"
     id "jacoco-report-aggregation"
+    id "me.qoomon.git-versioning" version "6.4.2"
     
 }
 
@@ -60,8 +61,28 @@ openApi {
     }
 }
 
+
+
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
+gitVersioning.apply {
+    ref {
+        branch {
+            version = '\${ref}-SNAPSHOT'
+        }
+        tag {
+            version = '\${ref.version}'
+        }
+    }
+
+    // Optional fallback configuration in case of no matching ref configuration
+    rev {
+        version = '\${commit}'
+    }
+}
+
+
+
 description = 'demo_2'
 java.sourceCompatibility = JavaVersion.VERSION_15
 
