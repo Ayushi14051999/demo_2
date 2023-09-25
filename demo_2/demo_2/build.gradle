@@ -66,20 +66,21 @@ openApi {
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 gitVersioning.apply {
-    ref {
-        branch {
-            version = '\${ref}-SNAPSHOT'
+    refs {
+        branch('.+') {
+            version = '${ref}-SNAPSHOT'
         }
-        tag {
-            version = '\${ref.version}'
+        tag('v(?<version>.*)') {
+            version = 'v${ref.version}'
         }
     }
 
-    // Optional fallback configuration in case of no matching ref configuration
+    // optional fallback configuration in case of no matching ref configuration
     rev {
-        version = '\${commit}'
+        version = '${commit}'
     }
 }
+
 
 
 
